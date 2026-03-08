@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function DesignStudio() {
+import { Suspense } from 'react';
+
+function DesignStudioContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialPrompt = searchParams.get('prompt') || '';
@@ -261,5 +263,13 @@ export default function DesignStudio() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function DesignStudio() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-bold animate-pulse">Summoning AI Architect...</div>}>
+      <DesignStudioContent />
+    </Suspense>
   );
 }

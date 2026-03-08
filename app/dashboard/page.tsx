@@ -8,7 +8,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function Dashboard() {
+import { Suspense } from 'react';
+
+function DashboardContent() {
   const [user, setUser] = useState<any>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [activeProject, setActiveProject] = useState<any>(null);
@@ -172,7 +174,7 @@ export default function Dashboard() {
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                          <div>
                             <h2 className="text-4xl font-black mb-2 tracking-tighter uppercase leading-none">
-                              Master Plan <span className="text-gradient">HUD</span>
+                               Master Plan <span className="text-gradient">HUD</span>
                             </h2>
                             <p className="text-slate-500 font-medium">Monitoring real-time construction telemetry for {activeProject.builderName || 'Apex Structures'}.</p>
                          </div>
@@ -328,3 +330,12 @@ export default function Dashboard() {
     </main>
   );
 }
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-950 text-white font-bold animate-pulse">Initializing BuildMate HUD...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
