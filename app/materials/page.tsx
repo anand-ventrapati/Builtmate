@@ -57,42 +57,62 @@ export default function MaterialsMarketplace() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
            {loading ? (
-             [1,2,3,4].map(n => <div key={n} className="glass-card h-80 animate-pulse"></div>)
+             [1,2,3,4].map(n => <div key={n} className="glass-card h-96 animate-pulse"></div>)
            ) : (
              filteredMaterials.map((mat) => (
-               <div key={mat.id} className="glass-card p-10 flex flex-col group hover:-translate-y-2 hover:border-rose-500/30 transition-all duration-500 border-white/5 relative overflow-hidden">
-                  <div className="absolute -right-5 -top-5 opacity-5 group-hover:opacity-10 transition-opacity">
-                     <i className={`bx ${mat.category === 'Steel' ? 'bx-cube-alt' : 'bx-layer'} text-8xl`}></i>
+               <div key={mat.id} className="glass-card flex flex-col group hover:-translate-y-2 hover:border-rose-500/30 transition-all duration-500 border-white/5 overflow-hidden">
+
+                  {/* Image Banner */}
+                  <div className="h-44 relative overflow-hidden flex-shrink-0">
+                    <img
+                      src={mat.image}
+                      alt={mat.name}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                    <span className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[9px] font-black uppercase tracking-widest text-rose-400">
+                      {mat.category}
+                    </span>
+                    <span className={`absolute top-3 right-3 text-[9px] px-2 py-1 rounded-md font-black border uppercase tracking-tighter ${mat.stock === 'In Stock' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-rose-400 border-rose-500/30 bg-rose-500/10'}`}>
+                      {mat.stock}
+                    </span>
                   </div>
-                  
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-3xl text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-lg border border-white/5">
-                     <i className={`bx ${
-                        mat.category === 'Steel' ? 'bx-radar' : 
-                        mat.category === 'Cement' ? 'bx-square-rounded' : 
-                        mat.category === 'Paint' ? 'bx-color-fill' : 'bx-grid-alt'
-                     }`}></i>
-                  </div>
-                  
-                  <h3 className="font-bold text-xl mb-1 group-hover:text-white transition-colors">{mat.name}</h3>
-                  <p className="text-[9px] text-slate-500 font-extrabold uppercase tracking-[0.2em] mb-8">{mat.category}</p>
-                  
-                  <div className="mt-auto space-y-6">
-                     <div className="flex justify-between items-end">
-                        <p className="text-2xl font-black text-white tracking-tighter">{mat.price}</p>
-                        <span className={`text-[9px] px-2 py-1 rounded-md font-black border uppercase tracking-tighter ${mat.stock === 'In Stock' ? 'text-emerald-500 border-emerald-500/20 bg-emerald-500/5' : 'text-rose-500 border-rose-500/20 bg-rose-500/5'}`}>
-                           {mat.stock}
-                        </span>
-                     </div>
-                     <div className="space-y-4 pt-6 border-t border-white/5">
+
+                  {/* Card Body */}
+                  <div className="p-6 flex flex-col flex-1 relative">
+                    <div className="absolute -right-5 -top-5 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <i className={`bx ${mat.category === 'Steel' ? 'bx-cube-alt' : 'bx-layer'} text-8xl`}></i>
+                    </div>
+
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-xl text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all border border-white/5 flex-shrink-0">
+                        <i className={`bx ${
+                          mat.category === 'Steel' ? 'bx-radar' :
+                          mat.category === 'Cement' ? 'bx-square-rounded' :
+                          mat.category === 'Paint' ? 'bx-color-fill' : 'bx-grid-alt'
+                        }`}></i>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm leading-tight group-hover:text-white transition-colors">{mat.name}</h3>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto space-y-4">
+                      <div className="flex justify-between items-end">
+                        <p className="text-xl font-black text-white tracking-tighter">{mat.price}</p>
+                      </div>
+                      <div className="space-y-3 pt-4 border-t border-white/5">
                         <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500">
-                           <span className="flex items-center gap-1.5"><i className="bx bxs-user-circle text-xs text-rose-500"></i> {mat.supplier}</span>
-                           <span className="flex items-center gap-1.5"><i className="bx bx-map-pin text-xs"></i> {mat.location}</span>
+                          <span className="flex items-center gap-1.5"><i className="bx bxs-user-circle text-xs text-rose-500"></i> {mat.supplier}</span>
+                          <span className="flex items-center gap-1.5"><i className="bx bx-map-pin text-xs"></i> {mat.location}</span>
                         </div>
-                        <button className="w-full btn-secondary !py-3 !text-[10px] !uppercase !tracking-widest !rounded-xl group-hover:!bg-rose-600 group-hover:!border-rose-600 transition-all">
-                           Contact Supplier
+                        <button className="w-full btn-secondary !py-2.5 !text-[10px] !uppercase !tracking-widest !rounded-xl group-hover:!bg-rose-600 group-hover:!border-rose-600 transition-all">
+                          Contact Supplier
                         </button>
-                     </div>
+                      </div>
+                    </div>
                   </div>
+
                </div>
              ))
            )}
