@@ -142,15 +142,18 @@ export default function BuilderProfile() {
               </div>
             </div>
 
-            {/* Portfolio Grid Placeholder */}
+            {/* Portfolio Grid — unique images per builder from Firebase */}
             <div>
                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Project <span className="text-gradient">Portfolio</span></h3>
                <div className="grid grid-cols-2 gap-4">
-                  {[1,2,3,4].map(n => (
+                  {(builder.portfolio || []).map((imgUrl: string, n: number) => (
                     <div key={n} className="aspect-video rounded-3xl overflow-hidden glass-card relative group cursor-pointer">
-                      <img src={`https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?auto=format&fit=crop&q=80&w=400&sig=${n}`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                      <img src={imgUrl} alt={`Portfolio ${n + 1}`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80" />
-                      <p className="absolute bottom-4 left-6 text-xs font-bold uppercase tracking-widest text-white">Project Model {n}04</p>
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <span className="bg-slate-950/70 backdrop-blur-md px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest text-violet-400 border border-violet-500/30">View Project</span>
+                      </div>
+                      <p className="absolute bottom-4 left-6 text-xs font-bold uppercase tracking-widest text-white">{builder.specialization} · #{String(n + 1).padStart(2, '0')}</p>
                     </div>
                   ))}
                </div>

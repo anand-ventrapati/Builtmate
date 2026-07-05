@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { db } from '@/lib/firebase';
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
 export default function MaterialsMarketplace() {
   const [materials, setMaterials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMat, setSelectedMat] = useState<any>(null);
 
   useEffect(() => {
     const materialsRef = ref(db, 'materials');
@@ -23,7 +23,7 @@ export default function MaterialsMarketplace() {
     return () => unsubscribe();
   }, []);
 
-  const filteredMaterials = materials.filter(m => 
+  const filteredMaterials = materials.filter(m =>
     m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -31,9 +31,94 @@ export default function MaterialsMarketplace() {
   return (
     <main className="min-h-screen pt-24 pb-20 px-6 bg-slate-950">
       <Navbar />
-      
+
       {/* Background Glows */}
       <div className="glow-sphere top-20 right-1/4 w-[400px] h-[400px] bg-rose-600/10" />
+
+      {/* Contact Modal */}
+      {selectedMat && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          style={{ backgroundColor: 'rgba(2,6,23,0.85)', backdropFilter: 'blur(12px)' }}
+          onClick={() => setSelectedMat(null)}
+        >
+          <div
+            className="glass-card w-full max-w-md p-8 border-rose-500/30 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setSelectedMat(null)}
+              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-rose-500/30 transition-all"
+            >
+              <i className="bx bx-x text-lg text-white"></i>
+            </button>
+
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/5">
+              <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl text-rose-500">
+                <i className={`bx ${
+                  selectedMat.category === 'Steel' ? 'bx-radar' :
+                  selectedMat.category === 'Cement' ? 'bx-square-rounded' :
+                  selectedMat.category === 'Paint' ? 'bx-color-fill' : 'bx-grid-alt'
+                }`}></i>
+              </div>
+              <div>
+                <h3 className="font-black text-lg text-white leading-tight">{selectedMat.name}</h3>
+                <p className="text-[10px] text-rose-400 font-black uppercase tracking-widest">{selectedMat.supplier}</p>
+              </div>
+            </div>
+
+            {/* Contact Details */}
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                <i className="bx bx-phone text-rose-500 text-xl mt-0.5"></i>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Phone</p>
+                  <p className="text-white font-bold">{selectedMat.contact?.phone}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                <i className="bx bx-envelope text-rose-500 text-xl mt-0.5"></i>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Email</p>
+                  <p className="text-white font-bold">{selectedMat.contact?.email}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                <i className="bx bx-map text-rose-500 text-xl mt-0.5"></i>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Address</p>
+                  <p className="text-white font-bold text-sm">{selectedMat.contact?.address}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                <i className="bx bx-time text-rose-500 text-xl mt-0.5"></i>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Working Hours</p>
+                  <p className="text-white font-bold">{selectedMat.contact?.hours}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <a
+                href={`tel:${selectedMat.contact?.phone}`}
+                className="btn-primary text-center text-xs py-3.5 flex items-center justify-center gap-2"
+              >
+                <i className="bx bx-phone"></i> Call Now
+              </a>
+              <a
+                href={`mailto:${selectedMat.contact?.email}`}
+                className="btn-secondary text-center text-xs py-3.5 flex items-center justify-center gap-2"
+              >
+                <i className="bx bx-envelope"></i> Email
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-10">
@@ -45,9 +130,9 @@ export default function MaterialsMarketplace() {
           </div>
           <div className="glass-card flex items-center px-8 py-2 w-full md:w-[450px] border-white/5 shadow-2xl">
             <i className="bx bx-search text-rose-500 mr-4 text-2xl"></i>
-            <input 
-              type="text" 
-              placeholder="Filter materials (Cement, Steel...)" 
+            <input
+              type="text"
+              placeholder="Filter materials (Cement, Steel...)"
               className="bg-transparent border-none outline-none text-white w-full py-5 text-sm font-bold uppercase tracking-widest placeholder:text-slate-700"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -106,7 +191,10 @@ export default function MaterialsMarketplace() {
                           <span className="flex items-center gap-1.5"><i className="bx bxs-user-circle text-xs text-rose-500"></i> {mat.supplier}</span>
                           <span className="flex items-center gap-1.5"><i className="bx bx-map-pin text-xs"></i> {mat.location}</span>
                         </div>
-                        <button className="w-full btn-secondary !py-2.5 !text-[10px] !uppercase !tracking-widest !rounded-xl group-hover:!bg-rose-600 group-hover:!border-rose-600 transition-all">
+                        <button
+                          onClick={() => setSelectedMat(mat)}
+                          className="w-full btn-secondary !py-2.5 !text-[10px] !uppercase !tracking-widest !rounded-xl group-hover:!bg-rose-600 group-hover:!border-rose-600 transition-all"
+                        >
                           Contact Supplier
                         </button>
                       </div>
