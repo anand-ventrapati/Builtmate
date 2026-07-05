@@ -87,16 +87,19 @@ export default function DesignStudioContent() {
 
       const data = await response.json();
       if (data.error) throw new Error(data.error);
-      setResult(data);
+      setResult({ ...data, userPrompt: prompt || 'Standard Design', extraDetails, style });
     } catch (err: any) {
       console.error(err);
       setResult({
-        description: "A stunning contemporary residence featuring clean geometric lines and an open-plan living concept. The facade integrates textured concrete panels with large glazed sections, flooding interiors with natural light. Thoughtfully designed for the Indian climate with cross-ventilation and shaded balconies.",
-        features: ["Double-height living room with clerestory windows", "Cantilevered balcony with toughened glass railing", "Modular open kitchen with granite island", "Dedicated home office with built-in storage", "Solar-ready rooftop with parapet walls", "Rainwater harvesting system integrated into landscaping"],
+        description: `A stunning ${style} residence featuring clean lines and an open-plan living concept. Thoughtfully designed for the Indian climate with cross-ventilation.`,
+        features: ["Double-height living room", "Balcony with toughened glass", "Modular open kitchen", "Dedicated home office", "Solar-ready rooftop"],
         materials: ["Fe 500D TMT Steel", "OPC 53 Grade Cement", "Vitrified Tiles 800x800mm", "Toughened Float Glass 12mm", "Exterior Texture Coat Paint"],
-        estimatedBudget: "₹38L – ₹52L",
+        estimatedBudget: budget,
         constructionTimeline: "14–18 months",
-        architect_notes: "Recommend orienting the living room toward the east-facing garden for optimal morning light."
+        architect_notes: `Recommend orienting the living room toward the ${facing}-facing garden for optimal light.`,
+        userPrompt: prompt || 'Standard Design',
+        extraDetails,
+        style
       });
       setError('AI service busy. Showing a sample design concept.');
     } finally {
@@ -107,6 +110,20 @@ export default function DesignStudioContent() {
   const selectClass = "w-full bg-slate-950 border border-white/5 p-3.5 rounded-xl text-white outline-none focus:border-indigo-500/50 transition-all font-bold text-sm";
   const inputClass = "w-full bg-slate-950 border border-white/5 p-3.5 rounded-xl text-white outline-none focus:border-indigo-500/50 transition-all font-bold text-sm";
   const labelClass = "text-[10px] font-black uppercase tracking-widest text-indigo-400 border-b border-white/5 pb-2 mb-4 block";
+
+  const styleImages: Record<string, string> = {
+    Modern: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
+    Minimalist: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80',
+    Industrial: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80',
+    Traditional: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',
+    Colonial: 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&q=80',
+    Mediterranean: 'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=1200&q=80',
+    Contemporary: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80',
+    'Vastu-Compliant': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80',
+    Tropical: 'https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80'
+  };
+
+  const getStyleImage = (currentStyle: string) => styleImages[currentStyle] || styleImages['Modern'];
 
   return (
     <main className="min-h-screen pt-24 pb-20 px-6 bg-slate-950">
@@ -267,17 +284,23 @@ export default function DesignStudioContent() {
                 <div className="glass-card overflow-hidden bg-gradient-to-br from-slate-900 to-indigo-950/20">
                   <div className="aspect-video relative group">
                     <img
-                      src={`https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&q=80&w=1200&t=${Date.now()}`}
+                      src={getStyleImage(result.style || style)}
                       className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700"
                       alt="Architectural concept"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
                     <div className="absolute top-10 left-10 flex gap-3">
                       <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-full tracking-widest uppercase shadow-lg shadow-indigo-500/40">Concept Ready</span>
-                      <span className="bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-black px-4 py-2 rounded-full tracking-widest uppercase border border-white/10">{style} Style · {floors} Floor{Number(floors)>1?'s':''}</span>
+                      <span className="bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-black px-4 py-2 rounded-full tracking-widest uppercase border border-white/10">{result.style || style} Style</span>
                     </div>
                   </div>
                   <div className="p-12 relative -mt-32 z-10">
+                    <div className="mb-8 p-6 bg-slate-950/60 rounded-3xl border border-indigo-500/30 backdrop-blur-md shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-2 border-b border-indigo-500/20 pb-2">Client Vision</h4>
+                      <p className="text-slate-200 text-lg font-medium italic">"{result.userPrompt}"</p>
+                      {result.extraDetails && <p className="text-slate-400 text-sm mt-2">{result.extraDetails}</p>}
+                    </div>
+                    
                     <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">Architectural <span className="text-gradient">Description</span></h2>
                     <p className="text-slate-300 text-xl leading-relaxed font-light italic bg-slate-950/50 p-8 rounded-3xl border border-white/5 backdrop-blur-md">
                       "{result.description}"
